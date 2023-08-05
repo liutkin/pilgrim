@@ -13,7 +13,7 @@ import type { Tile } from '@/interfaces/Tile'
 const mapSize = pipe(keys, draw)(Size)
 const tiles = pipe(generateMap, ref)(mapSize as Size)
 
-const getRandomDelay = (): number => random(0, 1500) / 1000
+const getRandomSecondsDelay = (): number => random(0, 1500) / 1000
 </script>
 
 <template>
@@ -21,14 +21,13 @@ const getRandomDelay = (): number => random(0, 1500) / 1000
         <ul>
             <li v-for="(rows, rowIdx) in tiles" :key="rowIdx" class="flex">
                 <ul class="flex">
-                    <MapTile
-                        v-for="(tile, columnIdx) in rows as Tile[]"
-                        :key="tile.id"
-                        v-bind="tile"
-                        class="animate-fade w-10 h-10 opacity-0"
-                        :style="{ animationDelay: `${getRandomDelay()}s` }"
-                        :class="(rowIdx + columnIdx) % 2 === 0 ? 'bg-blue-400' : 'bg-blue-200'"
-                    />
+                    <li v-for="tile in rows as Tile[]" :key="tile.id">
+                        <MapTile
+                            v-bind="tile"
+                            class="tile"
+                            :style="{ animationDelay: `${getRandomSecondsDelay()}s` }"
+                        />
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -36,18 +35,24 @@ const getRandomDelay = (): number => random(0, 1500) / 1000
 </template>
 
 <style scoped>
-.animate-fade {
+.tile {
+    width: 2.5rem;
+    height: 2.5rem;
     animation-name: fade-in;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
+    transform: translateY(25%);
+    opacity: 0;
 }
 
 @keyframes fade-in {
     from {
         opacity: 0;
+        transform: translateY(25%);
     }
     to {
         opacity: 1;
+        transform: none;
     }
 }
 </style>
