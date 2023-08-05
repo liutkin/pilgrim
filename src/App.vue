@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { draw, keys, random } from 'radash'
-import { pipe } from 'ramda'
-
-import generateMap from '@/utils/generateMap'
-
+import { random } from 'radash'
+import getDimensions from '@/utils/getDimensions'
+import getTiles from '@/utils/getTiles'
+import getRandomMapSize from '@/utils/getRandomMapSize'
+import setHeroCoords from '@/utils/setHeroCoords'
+import getRandomCoords from '@/utils/getRandomCoords'
 import MapTile from '@/components/MapTile.vue'
-
-import { Size } from '@/enums/Map'
 import type { Tile } from '@/interfaces/Tile'
 
-const mapSize = pipe(keys, draw)(Size)
-const tiles = pipe(generateMap, ref)(mapSize as Size)
+const size = getRandomMapSize()
+const { length, width } = getDimensions(size)
+const heroStartingCoords = getRandomCoords(length, width)
 
-const getRandomSecondsDelay = (): number => random(0, 1500) / 1000
+const tiles = ref(setHeroCoords(getTiles(length, width), heroStartingCoords))
 </script>
 
 <template>
@@ -25,7 +25,7 @@ const getRandomSecondsDelay = (): number => random(0, 1500) / 1000
                         <MapTile
                             v-bind="tile"
                             class="tile"
-                            :style="{ animationDelay: `${getRandomSecondsDelay()}s` }"
+                            :style="{ animationDelay: `${random(0, 1500) / 1000}s` }"
                         />
                     </li>
                 </ul>
