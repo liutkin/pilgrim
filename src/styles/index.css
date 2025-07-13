@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+body {
+    background: url('/img/stars.png');
+}

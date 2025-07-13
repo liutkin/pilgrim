@@ -1,47 +1,60 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { random } from 'radash'
+import { pipe } from 'ramda'
+import getDimensions from '@/utils/getDimensions.ts'
+import getTiles from '@/utils/getTiles.ts'
+import getRandomMapSize from '@/utils/getRandomMapSize.ts'
+import setHeroCoords from '@/utils/setHeroCoords.ts'
+import getRandomCoords from '@/utils/getRandomCoords.ts'
+import MapTile from '@/components/MapTile.vue'
+import type { Tile } from '@/types/Tile.ts'
+
+const size = getRandomMapSize()
+const { length, width } = getDimensions(size)
+const heroStartingCoords = getRandomCoords(length, width)
+
+const tiles = pipe(getTiles, ref)(length, width)
+setHeroCoords(heroStartingCoords, tiles)
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div class="grid place-content-center h-screen">
+        <ul>
+            <li v-for="(rows, rowIdx) in tiles" :key="rowIdx" class="flex">
+                <ul class="flex">
+                    <li v-for="tile in rows as Tile[]" :key="tile.id">
+                        <MapTile
+                            v-bind="tile"
+                            class="tile"
+                            :style="{ animationDelay: `${random(0, 1500) / 1000}s` }"
+                        />
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.tile {
+    width: 2.5rem;
+    height: 2.5rem;
+    animation-name: fade-in;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    transform: translateY(25%);
+    opacity: 0;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(25%);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 </style>
